@@ -1,0 +1,26 @@
+{
+    "name": "nebijokit/omniva",
+    "description": "Library to communicate with Omniva API",
+    "type": "library",
+    "require": {
+        "php": ">=7.1",
+        "guzzlehttp/guzzle": "^6.3",
+        "myclabs/php-enum": "^1.6"
+    },
+    "require-dev": {
+        "phpspec/phpspec": "^4.3"
+    },
+    "autoload": {
+        "psr-4": {
+            "Omniva\\": "src/"
+        }
+    },
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Aurimas Baubkus",
+            "email": "ab@nebijokit.lt"
+        }
+    ],
+    "minimum-stability": "stable"
+}
