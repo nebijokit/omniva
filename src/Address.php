@@ -30,6 +30,8 @@ class Address
 
     private $street;
 
+    private $postcode;
+
     public function setName(string $name): self
     {
         $this->name = $name;
@@ -63,6 +65,11 @@ class Address
         return $this->email;
     }
 
+    public function hasEmail(): bool
+    {
+        return is_string($this->email);
+    }
+
     public function setCountryCode(string $code): self
     {
         $this->country = $code;
@@ -78,6 +85,11 @@ class Address
     {
         $this->terminal = $terminal;
         return $this;
+    }
+
+    public function hasTerminal(): bool
+    {
+        return is_string($this->terminal);
     }
 
     public function getTerminal(): string
@@ -105,5 +117,16 @@ class Address
     public function getStreet(): string
     {
         return $this->street;
+    }
+
+    public function setPostCode(string $code): self
+    {
+        $this->postcode = $code;
+        return $this;
+    }
+
+    public function getPostCode(): string
+    {
+        return $this->postcode;
     }
 }

@@ -5,7 +5,7 @@
 ## ToDo
 
 - [x] create model `Service`
-- [ ] create model `Address`
+- [x] create model `Address`
 - [ ] implement `Client` labels creation
 - [ ] implement `Client` download labels
 - [ ] implement `Client` tracking

@@ -32,7 +32,9 @@ class AddressSpec extends ObjectBehavior
     {
         $email = 'ab@nebijokit.lt';
 
+        $this->hasEmail()->shouldReturn(false);
         $this->setEmail($email)->shouldHaveType(Address::class);
+        $this->hasEmail()->shouldReturn(true);
         $this->getEmail()->shouldReturn($email);
     }
 
@@ -48,7 +50,9 @@ class AddressSpec extends ObjectBehavior
     {
         $identifier = '88822';
 
+        $this->hasTerminal()->shouldReturn(false);
         $this->setTerminal($identifier)->shouldHaveType(Address::class);
+        $this->hasTerminal()->shouldReturn(true);
         $this->getTerminal()->shouldReturn($identifier);
     }
 
@@ -66,5 +70,13 @@ class AddressSpec extends ObjectBehavior
 
         $this->setStreet($street)->shouldHaveType(Address::class);
         $this->getStreet()->shouldReturn($street);
+    }
+
+    public function it_should_have_postcode()
+    {
+        $code = '00000';
+
+        $this->setPostCode($code)->shouldHaveType(Address::class);
+        $this->getPostCode()->shouldReturn($code);
     }
 }

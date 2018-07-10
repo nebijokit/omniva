@@ -2,14 +2,13 @@
 
 namespace Omniva;
 use Omniva\Service;
+use Omniva\Address;
 use ArrayIterator;
 
 class Parcel
 {
-    private $username;
-
     /**
-     * weight in grams
+     * weight in kilograms
      */
     private $weight;
 
@@ -28,24 +27,13 @@ class Parcel
     private $comment;
     private $partnerId;
 
-    public $receiver;
-    public $return;
-    public $sender;
+    private $receiver;
+    private $returnee;
+    private $sender;
 
     public function __construct()
     {
         $this->services = new ArrayIterator();
-    }
-
-    public function setUsername(string $username): self
-    {
-        $this->username = $username;
-        return $this;
-    }
-
-    public function getUsername(): string
-    {
-        return $this->username;
     }
 
     /**
@@ -66,6 +54,11 @@ class Parcel
     {
         $this->comment = $comment;
         return $this;
+    }
+
+    public function hasComment(): bool
+    {
+        return !is_null($this->comment);
     }
 
     public function getComment(): string
@@ -90,7 +83,7 @@ class Parcel
         return $this;
     }
 
-    public function getCodAmount(): float
+    public function getCodAmount(): ?float
     {
         return $this->codAmount;
     }
@@ -106,6 +99,11 @@ class Parcel
         return $this->bankAccount;
     }
 
+    public function hasServices(): bool
+    {
+        return $this->services->count() > 0;
+    }
+
     public function addService(Service $service): self
     {
         $this->services->append($service);
@@ -117,114 +115,36 @@ class Parcel
         return $this->services;
     }
 
-    public function toXml(): string
+    public function setSender(Address $sender): self
     {
-        $writer = new \XmlWriter();
-        $writer->openMemory();
+        $this->sender = $sender;
+        return $this;
+    }
 
-        $writer->writeElement('partner', $this->getUsername());
+    public function getSender(): Address
+    {
+        return $this->sender;
+    }
 
-        $writer->startElement('interchange');
-        $writer->writeAttribute('msg_type', 'elsinfov1');
+    public function setReceiver(Address $receiver): self
+    {
+        $this->receiver = $receiver;
+        return $this;
+    }
 
-        $writer->startElement('header');
-        $writer->writeAttribute('file_id', date("YmdHms"));
-        $writer->writeAttribute('sender_cd', $this->getUsername());
-        $writer->endElement();
+    public function getReceiver(): Address
+    {
+        return $this->receiver;
+    }
 
-        $writer->startElement('item_list');
-        $writer->startElement('item');
-        $writer->writeAttribute('service', 'QP');
+    public function setReturnee(Address $returnee): self
+    {
+        $this->returnee = $returnee;
+        return $this;
+    }
 
-        if ($this->hasServices()) {
-            $writer->startElement('add_service');
-            foreach ($this->getServices() as $service) {
-                $writer->writeElement('option', $service);
-            }
-            $writer->endElement();
-        }
-
-        $writer->startElement('measures');
-        $writer->writeAttribute('weight', $this->getWeight());
-        $writer->endElement();
-
-        $writer->startElement('monetary_values');
-        $writer->writeElement('item_value', '');
-        $writer->endDocument();
-
-        $writer->endElement();
-        $writer->endElement();
-
-        $writer->endElement();
-
-        echo $writer->outputMemory();
-        exit;
-
-        return $writer->outputMemory();
-
-        /*
-        builder = ::Nokogiri::XML::Builder.new(encoding: 'UTF-8') do |xml|
-                  xml.root do
-                    xml.partner account_courier.username
-                    xml.interchange(msg_type: "elsinfov1") do
-                      xml.header(file_id: Time.now.strftime('%Y%m%d%H%M%S'), sender_cd: account_courier.username)
-                      xml.item_list do
-                        shipment.parcels.each do |parcel|
-                          xml.item(item_params) do
-
-                            xml.measures(weight: shipment.weight)
-
-                            xml.monetary_values do
-                              xml.values(code: "item_value", amount: shipment.cod_amount)
-                            end if shipment.cod?
-
-                            xml.account account_courier.account.bank_account if shipment.cod?
-
-                            xml.comment_ shipment.remark if shipment.remark?
-                            xml.partnerId parcel.id_for_external_system
-
-                            xml.receiverAddressee do
-                              xml.person_name shipment.receiver.name
-                              xml.mobile shipment.receiver.phone if shipment.receiver.phone.present?
-                              xml.email shipment.receiver.email if shipment.receiver.email.present?
-
-                              if shipment.receiver.parcel_terminal
-                                xml.address(offloadPostcode: shipment.receiver.parcel_terminal.identifier,
-                                            country: shipment.receiver.country.code)
-                              else
-                                xml.address(postcode: formatted_postal_code(shipment.receiver),
-                                        deliverypoint: shipment.receiver.city,
-                                        street: shipment.receiver.street,
-                                        country: shipment.receiver.country.code)
-                              end
-                            end
-
-                            address = return_address ? return_address : shipment.sender
-
-                            xml.returnAddressee do
-                              xml.person_name address.name
-                              xml.phone address.phone
-                              xml.address(postcode: formatted_postal_code(address),
-                                      deliverypoint: address.city,
-                                      country: address.country.code,
-                                      street: address.street)
-                            end
-
-                            xml.onloadAddressee do
-                              xml.person_name shipment.sender.name
-                              xml.phone shipment.sender.phone
-                              xml.email shipment.sender.email
-                              xml.address(postcode: formatted_postal_code(shipment.sender),
-                                      deliverypoint: shipment.sender.city,
-                                      street: shipment.sender.street,
-                                      country: shipment.sender.country.code)
-                            end if shipment.sender.id != address.id
-                          end
-                        end
-                      end
-                    end
-                  end
-                end
-         */
+    public function getReturnee(): Address
+    {
+        return $this->returnee;
     }
 }

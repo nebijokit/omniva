@@ -4,6 +4,7 @@ namespace spec\Omniva;
 
 use Omniva\Parcel;
 use Omniva\Service;
+use Omniva\Address;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
 
@@ -12,14 +13,6 @@ class ParcelSpec extends ObjectBehavior
     function it_is_initializable()
     {
         $this->shouldHaveType(Parcel::class);
-    }
-
-    public function it_should_allow_to_set_username()
-    {
-        $username = 'string';
-        $this->setUsername($username)->shouldHaveType(Parcel::class);
-
-        $this->getUsername()->shouldReturn($username);
     }
 
     public function it_should_allow_to_set_weight()
@@ -32,7 +25,9 @@ class ParcelSpec extends ObjectBehavior
     public function it_should_allow_to_set_comment()
     {
         $comment = 'comment';
+        $this->hasComment()->shouldReturn(false);
         $this->setComment($comment)->shouldHaveType(Parcel::class);
+        $this->hasComment()->shouldReturn(true);
         $this->getComment()->shouldReturn($comment);
     }
 
@@ -46,6 +41,7 @@ class ParcelSpec extends ObjectBehavior
     public function it_should_return_cod_amount()
     {
         $amount = 12.22;
+        $this->getCodAmount()->shouldReturn(null);
         $this->setCodAmount($amount)->shouldHaveType(Parcel::class);
         $this->getCodAmount()->shouldReturn($amount);
     }
@@ -62,10 +58,35 @@ class ParcelSpec extends ObjectBehavior
         $sms = Service::SMS();
         $cod = Service::COD();
 
+        $this->hasServices()->shouldReturn(false);
         $this->addService($sms)->shouldHaveType(Parcel::class);
+        $this->hasServices()->shouldReturn(true);
         $this->getServices()->count()->shouldReturn(1);
 
         $this->addService($cod)->shouldHaveType(Parcel::class);
+        $this->hasServices()->shouldReturn(true);
         $this->getServices()->count()->shouldReturn(2);
+    }
+
+    public function it_should_have_address()
+    {
+        $address = new Address();
+        $address
+            ->setName('Karalius Mindaugas')
+            ->setPhone('+37060000000')
+            ->setCountryCode('LT')
+            ->setCity('Vilnius')
+            ->setStreet('Katedros a. 4')
+            ->setPostCode('00000')
+        ;
+
+        $this->setSender($address)->shouldHaveType(Parcel::class);
+        $this->getSender()->shouldReturn($address);
+
+        $this->setReceiver($address)->shouldHaveType(Parcel::class);
+        $this->getReceiver()->shouldReturn($address);
+
+        $this->setReturnee($address)->shouldHaveType(Parcel::class);
+        $this->getReturnee()->shouldReturn($address);
     }
 }
