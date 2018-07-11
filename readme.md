@@ -6,8 +6,8 @@
 
 - [x] create model `Service`
 - [x] create model `Address`
-- [ ] implement `Client` labels creation
-- [ ] implement `Client` download labels
+- [x] implement `Client` labels creation
+- [x] implement `Client` download labels
 - [ ] implement `Client` tracking
 - [ ] implement `Client` terminals list
 
