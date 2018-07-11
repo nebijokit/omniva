@@ -4,6 +4,9 @@ namespace Omniva;
 
 use Omniva\Parcel;
 use Omniva\Service;
+use SoapVar;
+use XMLWriter;
+use stdClass;
 
 class Client
 {
@@ -29,9 +32,24 @@ class Client
         );
     }
 
-    public function createShipment(Parcel $parcel)
+    /**
+     * returned object structure:
+     * 
+     * object(stdClass)#11 (4) {
+     *  ["partner"]=> "string"
+     *  ["provider"]=> "string, example: EEPOST"
+     *  ["prompt"]=> "string: message from API"
+     *  ["savedPacketInfo"]=> object(stdClass)#12 (1) {
+     *      ["barcodeInfo"]=> object(stdClass)#13 (2) {
+     *          ["clientItemId"]=> "string"
+     *          ["barcode"]=> "string"
+     *      }
+     *  }
+     * }
+     */
+    public function createShipment(Parcel $parcel): stdClass
     {
-        $writer = new \XMLWriter;
+        $writer = new XMLWriter;
         $writer->openMemory();
 
         $writer->startElement('ns1:businessToClientMsgRequest');
@@ -143,20 +161,44 @@ class Client
         $writer->endElement();
         $writer->endElement();
 
-        $xml = $writer->outputMemory();
-
-        try {
-            $this->client->businessToClientMsg(
-                new \SoapVar($xml, XSD_ANYXML)
-            );
-        } catch (\SoapFault $e) {
-            var_dump($e->getMessage());
+        return $this->client->businessToClientMsg(
+            new SoapVar($writer->outputMemory(), XSD_ANYXML)
+        );
+    }
+    
+    /**
+     * response structure
+     * 
+     * object(stdClass)#8 (3) {
+     *  ["partner"]=> "string"
+     *  ["failedAddressCards"]=> object(stdClass)#9 (0) {}
+     *  ["successAddressCards"]=> object(stdClass)#10 (1) {
+     *      ["addressCardData"]=> object(stdClass)#11 (2) {
+     *          ["barcode"]=> "string"
+     *          ["fileData"]=>  "base64 encoded string"
+     *      }
+     *  }
+     * }
+     */
+    public function getLabel(Parcel $parcel): stdClass
+    {
+        if (!$parcel->hasTrackingNumber()) {
+            throw new \InvalidArgumentException('Parcel must have tracking number');
         }
 
+        $writer = new XMLWriter();
+        $writer->openMemory();
 
-        echo "REQUEST:\n" . $this->client->__getLastRequest() . "\n";
-        echo "REQUEST HEADERS:\n" . $this->client->__getLastRequestHeaders() . "\n";
-        echo "Response:\n" . $this->client->__getLastResponse() . "\n";
-        echo "RESPONSE HEADERS:\n" . $this->client->__getLastResponseHeaders() . "\n";
+        $writer->startElement('ns1:addrcardMsgRequest');
+        $writer->writeElement('partner', $this->username);
+        $writer->writeElement('sendAddressCardTo', 'response');
+        $writer->startElement('barcodes');
+        $writer->writeElement('barcode', $parcel->getTrackingNumber());
+        $writer->endElement();
+        $writer->endElement();
+
+        return $this->client->addrcardMsg(
+            new SoapVar($writer->outputMemory(), XSD_ANYXML)
+        );
     }
 }

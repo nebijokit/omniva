@@ -31,6 +31,8 @@ class Parcel
     private $returnee;
     private $sender;
 
+    private $trackingNumber;
+
     public function __construct()
     {
         $this->services = new ArrayIterator();
@@ -146,5 +148,21 @@ class Parcel
     public function getReturnee(): Address
     {
         return $this->returnee;
+    }
+
+    public function hasTrackingNumber(): bool
+    {
+        return !is_null($this->trackingNumber);
+    }
+
+    public function getTrackingNumber(): string
+    {
+        return $this->trackingNumber;
+    }
+
+    public function setTrackingNumber(string $number): self
+    {
+        $this->trackingNumber = $number;
+        return $this;
     }
 }

@@ -89,4 +89,16 @@ class ParcelSpec extends ObjectBehavior
         $this->setReturnee($address)->shouldHaveType(Parcel::class);
         $this->getReturnee()->shouldReturn($address);
     }
+
+    public function it_should_have_tracking_nubmer()
+    {
+        $number = 'AB0009213434LT';
+        $this->hasTrackingNumber()->shouldReturn(false);
+
+        $this->setTrackingNumber($number)->shouldHaveType(Parcel::class);
+
+        $this->hasTrackingNumber()->shouldReturn(true);
+
+        $this->getTrackingNumber()->shouldReturn($number);
+    }
 }
