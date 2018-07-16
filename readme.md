@@ -1,6 +1,6 @@
 # Omniva API
 
-**Still in active development**
+[![SensioLabsInsight](https://insight.sensiolabs.com/projects/8151bcc9-e8d6-4b63-909a-bfe550fee571/mini.png)](https://insight.sensiolabs.com/projects/8151bcc9-e8d6-4b63-909a-bfe550fee571)
 
 ## ToDo
 
