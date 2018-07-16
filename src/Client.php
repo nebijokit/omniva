@@ -34,7 +34,7 @@ class Client
 
     /**
      * returned object structure:
-     * 
+     *
      * object(stdClass)#11 (4) {
      *  ["partner"]=> "string"
      *  ["provider"]=> "string, example: EEPOST"
@@ -79,7 +79,9 @@ class Client
         if ($parcel->hasServices()) {
             $writer->startElement('add_service');
             foreach ($parcel->getServices() as $service) {
-                $writer->writeElement('option', $service->getValue());
+                $writer->startElement('option');
+                $writer->writeAttribute('code', $service->getValue());
+                $writer->endElement();
             }
             $writer->endElement();
         }
@@ -90,8 +92,13 @@ class Client
 
         if ($parcel->getCodAmount()) {
             $writer->startElement('monetary_values');
-            $writer->writeElement('item_value', $parcel->getCodAmount());
-            $writer->endDocument();
+
+            $writer->startElement('values');
+            $writer->writeAttribute('code', 'item_value');
+            $writer->writeAttribute('amount', $parcel->getCodAmount());
+            $writer->endElement();
+
+            $writer->endElement();
 
             $writer->writeElement('account', $parcel->getBankAccount());
         }
@@ -165,10 +172,10 @@ class Client
             new SoapVar($writer->outputMemory(), XSD_ANYXML)
         );
     }
-    
+
     /**
      * response structure
-     * 
+     *
      * object(stdClass)#8 (3) {
      *  ["partner"]=> "string"
      *  ["failedAddressCards"]=> object(stdClass)#9 (0) {}
