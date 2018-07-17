@@ -6,7 +6,6 @@ cache:
 
 php:
     - '7.2'
-    - nightly
 
 before_install: echo "extension = soap.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
 
