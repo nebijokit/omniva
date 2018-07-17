@@ -1,0 +1,9 @@
+language: php
+php:
+    - '7.2'
+    - nightly
+
+before_install: echo "extension = soap.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
+
+script:
+   - ./vendor/bin/phpspec run --format=dot
