@@ -2,6 +2,8 @@
 
 namespace Omniva;
 
+use Omniva\PickupPoint;
+
 class Address
 {
     /**
@@ -32,6 +34,8 @@ class Address
 
     private $postcode;
 
+    private $pickupPoint;
+
     public function setName(string $name): self
     {
         $this->name = $name;
@@ -43,13 +47,13 @@ class Address
         return $this->name;
     }
 
-    public function setPhone(string $phone): self
+    public function setPhone(?string $phone): self
     {
         $this->phone = $phone;
         return $this;
     }
 
-    public function getPhone(): string
+    public function getPhone(): ?string
     {
         return $this->phone;
     }
@@ -83,17 +87,20 @@ class Address
 
     public function setTerminal(string $terminal): self
     {
+        trigger_error('This method will removed 1.0. Use setPickupPoint() instead.', E_USER_DEPRECATED);
         $this->terminal = $terminal;
         return $this;
     }
 
     public function hasTerminal(): bool
     {
+        trigger_error('This method will removed 1.0. Use hasPickupPoint() instead.', E_USER_DEPRECATED);
         return is_string($this->terminal);
     }
 
-    public function getTerminal(): string
+    public function getTerminal(): ?string
     {
+        trigger_error('This method will removed 1.0. Use getPickupPoint() instead.', E_USER_DEPRECATED);
         return $this->terminal;
     }
 
@@ -128,5 +135,16 @@ class Address
     public function getPostCode(): string
     {
         return $this->postcode;
+    }
+
+    public function setPickupPoint(PickupPoint $point)
+    {
+        $this->pickupPoint = $point;
+        return $this;
+    }
+
+    public function getPickupPoint(): ?PickupPoint
+    {
+        return $this->pickupPoint;
     }
 }

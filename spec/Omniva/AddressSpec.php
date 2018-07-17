@@ -4,6 +4,7 @@ namespace spec\Omniva;
 
 use PhpSpec\ObjectBehavior;
 use Omniva\Address;
+use Omniva\PickupPoint;
 
 class AddressSpec extends ObjectBehavior
 {
@@ -46,14 +47,20 @@ class AddressSpec extends ObjectBehavior
         $this->getCountryCode()->shouldReturn($code);
     }
 
-    public function it_should_have_terminal_identifier()
+    public function it_should_trigger_deprecation_when_setting_terminal()
     {
         $identifier = '88822';
+        $this->shouldTrigger(E_USER_DEPRECATED)->duringSetTerminal($identifier);
+    }
 
-        $this->hasTerminal()->shouldReturn(false);
-        $this->setTerminal($identifier)->shouldHaveType(Address::class);
-        $this->hasTerminal()->shouldReturn(true);
-        $this->getTerminal()->shouldReturn($identifier);
+    public function it_should_trigger_deprecation_when_getting_terminal()
+    {
+        $this->shouldTrigger(E_USER_DEPRECATED)->duringGetTerminal();
+    }
+
+    public function it_should_trigger_deprecation_when_checking_whether_terminal_is_set()
+    {
+        $this->shouldTrigger(E_USER_DEPRECATED)->duringHasTerminal();
     }
 
     public function it_should_have_city()
@@ -78,5 +85,11 @@ class AddressSpec extends ObjectBehavior
 
         $this->setPostCode($code)->shouldHaveType(Address::class);
         $this->getPostCode()->shouldReturn($code);
+    }
+
+    public function it_should_allow_to_set_pickup_point(PickupPoint $point)
+    {
+        $this->setPickupPoint($point)->shouldHaveType(Address::class);
+        $this->getPickupPoint()->shouldReturn($point);
     }
 }
