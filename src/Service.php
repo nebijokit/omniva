@@ -5,10 +5,10 @@ namespace Omniva;
 use MyCLabs\Enum\Enum;
 
 /**
- * @method Service TERMINAL()
- * @method Service COURIER()
- * @method Service COURIER_LT_LV()
- * @method Service POST_OFFICE()
+ * @method static Service TERMINAL()
+ * @method static Service COURIER()
+ * @method static Service COURIER_LT_LV()
+ * @method static Service POST_OFFICE()
  */
 class Service extends Enum
 {

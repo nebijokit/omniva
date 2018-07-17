@@ -121,7 +121,7 @@ class Client
         } else {
             $writer->writeAttribute('postcode', $receiver->getPostCode());
             $writer->writeAttribute('deliverypoint', $receiver->getCity());
-            $writer->writeAttribute('street', $receiver->getStreet());            
+            $writer->writeAttribute('street', $receiver->getStreet());
         }
 
         $writer->writeAttribute('country', $receiver->getCountryCode());
@@ -209,7 +209,7 @@ class Client
         );
     }
 
-    public function getSoapCLient(): SopaClient
+    public function getSoapCLient(): SoapClient
     {
         if (!$this->soapClient instanceof SoapClient) {
             $this->soapClient = new SoapClient(
