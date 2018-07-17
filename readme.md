@@ -2,6 +2,9 @@
 
 PHP wrapper for courier Omniva integration.
 
+[![SensioLabsInsight](https://insight.sensiolabs.com/projects/8151bcc9-e8d6-4b63-909a-bfe550fee571/mini.png)](https://insight.sensiolabs.com/projects/8151bcc9-e8d6-4b63-909a-bfe550fee571)
+[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/nebijokit/omniva/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/nebijokit/omniva/?branch=master)
+
 ## ToDo
 
 - [ ] implement `Client` tracking
