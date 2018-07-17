@@ -1,9 +1,17 @@
 language: php
+
+cache:
+  directories:
+    - $HOME/.composer/cache
+
 php:
     - '7.2'
     - nightly
 
 before_install: echo "extension = soap.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
+
+install:
+    - composer install --dev
 
 script:
    - ./vendor/bin/phpspec run --format=dot
