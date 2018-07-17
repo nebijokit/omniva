@@ -7,6 +7,9 @@ use Omniva\Service;
 use SoapVar;
 use XMLWriter;
 use stdClass;
+use SoapClient;
+use GuzzleHttp\Client as HttpClient;
+use Omniva\PickupPoint;
 
 class Client
 {
@@ -14,27 +17,19 @@ class Client
 
     private $password;
 
-    private $client;
+    private $httpClient;
+
+    private $soapClient;
 
     public function __construct(string $username, string $password)
     {
         $this->username = $username;
         $this->password = $password;
-
-        $this->client = new \SoapClient(
-            'https://edixml.post.ee/epmx/services/messagesService.wsdl',
-            [
-                'login' => $this->username,
-                'password' => $this->password,
-                'trace' => true,
-                'exceptions' => true
-            ]
-        );
     }
 
     /**
      * returned object structure:
-     * 
+     *
      * object(stdClass)#11 (4) {
      *  ["partner"]=> "string"
      *  ["provider"]=> "string, example: EEPOST"
@@ -68,8 +63,18 @@ class Client
 
         $writer->startElement('item');
         $receiver = $parcel->getReceiver();
-        if ($receiver->hasTerminal()) {
-            $deliveryServiceCode = Service::TERMINAL();
+
+        $hasPickupPoint = $receiver->getPickupPoint() instanceof PickupPoint;
+        $pickupPoint = $receiver->getPickupPoint();
+
+        if ($hasPickupPoint) {
+            if ($pickupPoint->isPostOffice()) {
+                $deliveryServiceCode = Service::POST_OFFICE();
+            } else if ($pickupPoint->isTerminal()) {
+                $deliveryServiceCode = Service::TERMINAL();
+            } else {
+                throw new \RuntimeException('Wrong PickupPoint provided');
+            }
         } else {
             $deliveryServiceCode = in_array($receiver->getCountryCode(), ['LT', 'LV']) ? Service::COURIER_LT_LV() : Service::COURIER();
         }
@@ -110,13 +115,15 @@ class Client
         }
 
         $writer->startElement('address');
-        if ($receiver->hasTerminal()) {
-            $writer->writeAttribute('offloadPostcode', $receiver->getTerminal());
+
+        if ($hasPickupPoint) {
+            $writer->writeAttribute('offloadPostcode', $pickupPoint->getIdentifier());
         } else {
             $writer->writeAttribute('postcode', $receiver->getPostCode());
             $writer->writeAttribute('deliverypoint', $receiver->getCity());
-            $writer->writeAttribute('street', $receiver->getStreet());
+            $writer->writeAttribute('street', $receiver->getStreet());            
         }
+
         $writer->writeAttribute('country', $receiver->getCountryCode());
         $writer->endElement();
 
@@ -161,14 +168,14 @@ class Client
         $writer->endElement();
         $writer->endElement();
 
-        return $this->client->businessToClientMsg(
+        return $this->getSoapClient()->businessToClientMsg(
             new SoapVar($writer->outputMemory(), XSD_ANYXML)
         );
     }
-    
+
     /**
      * response structure
-     * 
+     *
      * object(stdClass)#8 (3) {
      *  ["partner"]=> "string"
      *  ["failedAddressCards"]=> object(stdClass)#9 (0) {}
@@ -197,8 +204,85 @@ class Client
         $writer->endElement();
         $writer->endElement();
 
-        return $this->client->addrcardMsg(
+        return $this->getSoapClient()->addrcardMsg(
             new SoapVar($writer->outputMemory(), XSD_ANYXML)
         );
+    }
+
+    public function getSoapCLient(): SopaClient
+    {
+        if (!$this->soapClient instanceof SoapClient) {
+            $this->soapClient = new SoapClient(
+                'https://edixml.post.ee/epmx/services/messagesService.wsdl',
+                [
+                    'login' => $this->username,
+                    'password' => $this->password,
+                    'trace' => true,
+                    'exceptions' => true
+                ]
+            );
+        }
+
+        return $this->soapClient;
+    }
+
+    public function getHttpClient(): HttpClient
+    {
+        if (!$this->httpClient instanceof HttpClient) {
+            $this->httpClient = new HttpClient();
+        }
+
+        return $this->httpClient;
+    }
+
+    /**
+     * multidimension array with item structure:
+     *
+     * array(25) {
+     *  [0]=> string(6) "﻿ZIP"
+     *  [1]=> string(4) "NAME"
+     *  [2]=> string(4) "TYPE"
+     *  [3]=> string(7) "A0_NAME"
+     *  [4]=> string(7) "A1_NAME"
+     *  [5]=> string(7) "A2_NAME"
+     *  [6]=> string(7) "A3_NAME"
+     *  [7]=> string(7) "A4_NAME"
+     *  [8]=> string(7) "A5_NAME"
+     *  [9]=> string(7) "A6_NAME"
+     *  [10]=> string(7) "A7_NAME"
+     *  [11]=> string(7) "A8_NAME"
+     *  [12]=> string(12) "X_COORDINATE"
+     *  [13]=> string(12) "Y_COORDINATE"
+     *  [14]=> string(13) "SERVICE_HOURS"
+     *  [15]=> string(18) "TEMP_SERVICE_HOURS"
+     *  [16]=> string(24) "TEMP_SERVICE_HOURS_UNTIL"
+     *  [17]=> string(20) "TEMP_SERVICE_HOURS_2"
+     *  [18]=> string(26) "TEMP_SERVICE_HOURS_2_UNTIL"
+     *  [19]=> string(11) "comment_est"
+     *  [20]=> string(11) "comment_eng"
+     *  [21]=> string(11) "comment_rus"
+     *  [22]=> string(11) "comment_lav"
+     *  [23]=> string(11) "comment_lit"
+     *  [24]=> string(8) "MODIFIED"
+     * }
+     */
+    public function getPickupPoints(): array
+    {
+        $response = $this->getHttpClient()->request('GET', 'https://www.omniva.ee/locations.csv');
+
+        $content = (string)$response->getBody();
+
+        $pickupPoints = [];
+        $file = fopen('php://temp','r+');
+        fwrite($file, $content);
+        rewind($file); //rewind to process CSV
+        while (($row = fgetcsv($file, 0, ';')) !== FALSE) {
+            $pickupPoints[] = $row;
+        }
+
+        // remove first item because it has only titles
+        unset($pickupPoints[0]);
+
+        return $pickupPoints;
     }
 }
