@@ -6,11 +6,10 @@
         "php": ">=7.1",
         "ext-soap": "*",
         "myclabs/php-enum": "^1.6",
-        "phpro/soap-client": "^0.7.4"
+        "guzzlehttp/guzzle": "^6.3"
     },
     "require-dev": {
-        "phpspec/phpspec": "^4.3",
-        "zendframework/zend-code": "^3.1.0"
+        "phpspec/phpspec": "^4.3"
     },
     "autoload": {
         "psr-4": {
