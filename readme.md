@@ -1,6 +1,6 @@
 # Omniva API
 
-PHP wrapper for courier Omniva integration.
+PHP wrapper for courier [Omniva integration](https://www.omniva.ee/public/files/failid/manual_xml_dataexchange_eng.pdf).
 
 [![Build Status](https://travis-ci.org/nebijokit/omniva.svg?branch=master)](https://travis-ci.org/nebijokit/omniva)
 [![SensioLabsInsight](https://insight.sensiolabs.com/projects/8151bcc9-e8d6-4b63-909a-bfe550fee571/mini.png)](https://insight.sensiolabs.com/projects/8151bcc9-e8d6-4b63-909a-bfe550fee571)
