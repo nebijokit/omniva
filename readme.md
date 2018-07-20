@@ -3,6 +3,9 @@
 PHP wrapper for courier [Omniva integration](https://www.omniva.ee/public/files/failid/manual_xml_dataexchange_eng.pdf).
 
 [![Build Status](https://travis-ci.org/nebijokit/omniva.svg?branch=master)](https://travis-ci.org/nebijokit/omniva)
+[![Maintainability](https://api.codeclimate.com/v1/badges/a69c99388dadb58cf74c/maintainability)](https://codeclimate.com/github/nebijokit/omniva/maintainability)
+[![Total Downloads](https://img.shields.io/packagist/dt/nebijokit/omniva.svg)](https://packagist.org/packages/nebijokit/omniva)
+
 [![SensioLabsInsight](https://insight.sensiolabs.com/projects/8151bcc9-e8d6-4b63-909a-bfe550fee571/mini.png)](https://insight.sensiolabs.com/projects/8151bcc9-e8d6-4b63-909a-bfe550fee571)
 [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/nebijokit/omniva/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/nebijokit/omniva/?branch=master)
 
