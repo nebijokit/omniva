@@ -1,5 +1,11 @@
 language: php
 
+addons:
+  soundcloud:
+    organization: "nebijokit"
+    token:
+      secure: SONAR_TOKEN
+
 cache:
   directories:
     - $HOME/.composer/cache
@@ -14,3 +20,4 @@ install:
 
 script:
    - ./vendor/bin/phpspec run --format=dot
+   - sonar-scanner
