@@ -10,23 +10,38 @@ class PickupPoint
     private $type;
     private $identifier;
 
-    public function __construct(string $identifier)
+    /**
+     * PickupPoint constructor.
+     * @param string $identifier
+     */
+    public function __construct($identifier)
     {
         $this->identifier = $identifier;
     }
 
-    public function setIdentifier(string $identifier): self
+    /**
+     * @param string $identifier
+     * @return PickupPoint
+     */
+    public function setIdentifier($identifier)
     {
         $this->identifier = $identifier;
         return $this;
     }
 
-    public function getIdentifier(): string
+    /**
+     * @return string
+     */
+    public function getIdentifier()
     {
         return $this->identifier;
     }
 
-    public function setType(int $type): self
+    /**
+     * @param int $type
+     * @return PickupPoint
+     */
+    public function setType($type)
     {
         if (!in_array($type, [self::TYPE_TERMINAL, self::TYPE_POST_OFFICE])) {
             throw new \InvalidArgumentException('Unsupported type');
@@ -36,24 +51,33 @@ class PickupPoint
         return $this;
     }
 
-    public function getType(): ?int
+    /**
+     * @return int|null
+     */
+    public function getType()
     {
         return $this->type;
     }
 
-    public function isPostOffice(): bool
+    /**
+     * @return bool
+     */
+    public function isPostOffice()
     {
         $this->guardAgainstEmptyType();
         return $this->getType() === self::TYPE_POST_OFFICE;
     }
 
-    public function isTerminal(): bool
+    /**
+     * @return bool
+     */
+    public function isTerminal()
     {
         $this->guardAgainstEmptyType();
         return $this->getType() === self::TYPE_TERMINAL;
     }
 
-    private function guardAgainstEmptyType(): void
+    private function guardAgainstEmptyType()
     {
         if ($this->getType() === null) {
             throw new \RuntimeException('No type has been provided');

@@ -21,7 +21,7 @@ class Client
 
     private $soapClient;
 
-    public function __construct(string $username, string $password)
+    public function __construct($username, $password)
     {
         $this->username = $username;
         $this->password = $password;
@@ -41,13 +41,57 @@ class Client
      *      }
      *  }
      * }
+     *
+     * @param Parcel $parcel
+     * @return stdClass
      */
-    public function createShipment(Parcel $parcel): stdClass
+    public function createShipment($parcel)
+    {
+        $writer = $this->generateShipmentXML('ns1:businessToClientMsgRequest', $parcel);
+
+        return $this->getSoapClient()->businessToClientMsg(
+            new SoapVar($writer->outputMemory(), XSD_ANYXML)
+        );
+    }
+
+    /**
+     * returned object structure:
+     *
+     * object(stdClass)#11 (4) {
+     *  ["partner"]=> "string"
+     *  ["provider"]=> "string, example: EEPOST"
+     *  ["prompt"]=> "string: message from API"
+     *  ["savedPacketInfo"]=> object(stdClass)#12 (1) {
+     *      ["barcodeInfo"]=> object(stdClass)#13 (2) {
+     *          ["clientItemId"]=> "string"
+     *          ["barcode"]=> "string"
+     *      }
+     *  }
+     * }
+     *
+     * @param Parcel $parcel
+     * @return stdClass
+     */
+    public function createPreShipment($parcel)
+    {
+        $writer = $this->generateShipmentXML('ns1:preSendMsgRequest', $parcel);
+
+        return $this->getSoapClient()->preSendMsg(
+            new SoapVar($writer->outputMemory(), XSD_ANYXML)
+        );
+    }
+
+    /**
+     * @param string $type
+     * @param Parcel $parcel
+     * @return XMLWriter
+     */
+    public function generateShipmentXML($type, $parcel)
     {
         $writer = new XMLWriter;
         $writer->openMemory();
 
-        $writer->startElement('ns1:businessToClientMsgRequest');
+        $writer->startElement($type);
 
         $writer->writeElement('partner', $this->username);
 
@@ -152,22 +196,24 @@ class Client
         $writer->endElement();
         $writer->endElement();
 
-        $writer->startElement('onloadAddressee');
-        $sender = $parcel->getSender();
-        $writer->writeElement('person_name', $sender->getName());
-        $writer->writeElement('mobile', $sender->getPhone());
-        if ($sender->hasEmail()) {
-            $writer->writeElement('email', $sender->getEmail());
+        if ($parcel->getSender()) {
+            $writer->startElement('onloadAddressee');
+            $sender = $parcel->getSender();
+            $writer->writeElement('person_name', $sender->getName());
+            $writer->writeElement('mobile', $sender->getPhone());
+            if ($sender->hasEmail()) {
+                $writer->writeElement('email', $sender->getEmail());
+            }
+
+            $writer->startElement('address');
+            $writer->writeAttribute('postcode', $sender->getPostCode());
+            $writer->writeAttribute('deliverypoint', $sender->getCity());
+            $writer->writeAttribute('street', $sender->getStreet());
+            $writer->writeAttribute('country', $sender->getCountryCode());
+            $writer->endElement();
+            $writer->endElement();
         }
 
-        $writer->startElement('address');
-        $writer->writeAttribute('postcode', $sender->getPostCode());
-        $writer->writeAttribute('deliverypoint', $sender->getCity());
-        $writer->writeAttribute('street', $sender->getStreet());
-        $writer->writeAttribute('country', $sender->getCountryCode());
-        $writer->endElement();
-        $writer->endElement();
-
         $writer->endElement();
 
         $writer->endElement();
@@ -175,9 +221,7 @@ class Client
         $writer->endElement();
         $writer->endElement();
 
-        return $this->getSoapClient()->businessToClientMsg(
-            new SoapVar($writer->outputMemory(), XSD_ANYXML)
-        );
+        return $writer;
     }
 
     /**
@@ -193,8 +237,11 @@ class Client
      *      }
      *  }
      * }
+     *
+     * @param Parcel $parcel
+     * @return stdClass
      */
-    public function getLabel(Parcel $parcel): stdClass
+    public function getLabel($parcel)
     {
         if (!$parcel->hasTrackingNumber()) {
             throw new \InvalidArgumentException('Parcel must have tracking number');
@@ -216,7 +263,8 @@ class Client
         );
     }
 
-    public function getSoapCLient(): SoapClient
+    /** @return SoapClient */
+    public function getSoapCLient()
     {
         if (!$this->soapClient instanceof SoapClient) {
             $this->soapClient = new SoapClient(
@@ -233,7 +281,10 @@ class Client
         return $this->soapClient;
     }
 
-    public function getHttpClient(): HttpClient
+    /**
+     * @return HttpClient
+     */
+    public function getHttpClient()
     {
         if (!$this->httpClient instanceof HttpClient) {
             $this->httpClient = new HttpClient();
@@ -272,8 +323,10 @@ class Client
      *  [23]=> string(11) "comment_lit"
      *  [24]=> string(8) "MODIFIED"
      * }
+     *
+     * @return array
      */
-    public function getPickupPoints(): array
+    public function getPickupPoints()
     {
         $response = $this->getHttpClient()->request('GET', 'https://www.omniva.ee/locations.csv');
 

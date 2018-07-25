@@ -12,11 +12,11 @@ use MyCLabs\Enum\Enum;
  */
 class Service extends Enum
 {
-    private const SMS = 'ST';
-    private const EMAIL = 'SF';
-    private const COD = 'BP';
-    private const TERMINAL = 'PP';
-    private const POST_OFFICE = 'CD';
-    private const COURIER = 'QP';
-    private const COURIER_LT_LV = 'QH';
+    const SMS = 'ST';
+    const EMAIL = 'SF';
+    const COD = 'BP';
+    const TERMINAL = 'PP';
+    const POST_OFFICE = 'CD';
+    const COURIER = 'QP';
+    const COURIER_LT_LV = 'QH';
 }

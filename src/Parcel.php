@@ -1,6 +1,7 @@
 <?php
 
 namespace Omniva;
+
 use Omniva\Service;
 use Omniva\Address;
 use ArrayIterator;
@@ -40,127 +41,204 @@ class Parcel
 
     /**
      * in grams
+     * @param float $weight
+     * @return Parcel
      */
-    public function setWeight(float $weight)
+    public function setWeight($weight)
     {
         $this->weight = $weight;
         return $this;
     }
 
-    public function getWeight(): float
+    /**
+     * @return float
+     */
+    public function getWeight()
     {
         return $this->weight;
     }
 
-    public function setComment(string $comment): self
+    /**
+     * @param string $comment
+     * @return Parcel
+     */
+    public function setComment($comment)
     {
         $this->comment = $comment;
         return $this;
     }
 
-    public function hasComment(): bool
+    /**
+     * @return bool
+     */
+    public function hasComment()
     {
         return !is_null($this->comment);
     }
 
-    public function getComment(): string
+    /**
+     * @return string
+     */
+    public function getComment()
     {
         return $this->comment;
     }
 
-    public function setPartnerId(string $partnerId): self
+    /**
+     * @param string $partnerId
+     * @return Parcel
+     */
+    public function setPartnerId($partnerId)
     {
         $this->partnerId = $partnerId;
         return $this;
     }
 
-    public function getPartnerId(): string
+    /**
+     * @return string
+     */
+    public function getPartnerId()
     {
         return $this->partnerId;
     }
 
-    public function setCodAmount(float $amount): self
+    /**
+     * @param float $amount
+     * @return Parcel
+     */
+    public function setCodAmount($amount)
     {
         $this->codAmount = $amount;
         return $this;
     }
 
-    public function getCodAmount(): ?float
+    /**
+     * @return float|null
+     */
+    public function getCodAmount()
     {
         return $this->codAmount;
     }
 
-    public function setBankAccount(string $number): self
+    /**
+     * @param string $number
+     * @return Parcel
+     */
+    public function setBankAccount($number)
     {
         $this->bankAccount = $number;
         return $this;
     }
 
-    public function getBankAccount(): string
+    /**
+     * @return string
+     */
+    public function getBankAccount()
     {
         return $this->bankAccount;
     }
 
-    public function hasServices(): bool
+    /**
+     * @return bool
+     */
+    public function hasServices()
     {
         return $this->services->count() > 0;
     }
 
-    public function addService(Service $service): self
+    /**
+     * @param \Omniva\Service $service
+     * @return Parcel
+     */
+    public function addService($service)
     {
         $this->services->append($service);
         return $this;
     }
 
-    public function getServices(): ArrayIterator
+    /**
+     * @return ArrayIterator
+     */
+    public function getServices()
     {
         return $this->services;
     }
 
-    public function setSender(Address $sender): self
+    /**
+     * @param \Omniva\Address $sender
+     * @return Parcel
+     */
+    public function setSender($sender)
     {
         $this->sender = $sender;
         return $this;
     }
 
-    public function getSender(): Address
+    /**
+     * @return \Omniva\Address
+     */
+    public function getSender()
     {
         return $this->sender;
     }
 
-    public function setReceiver(Address $receiver): self
+    /**
+     * @param \Omniva\Address $receiver
+     * @return Parcel
+     */
+    public function setReceiver($receiver)
     {
         $this->receiver = $receiver;
         return $this;
     }
 
-    public function getReceiver(): Address
+    /**
+     * @return \Omniva\Address
+     */
+    public function getReceiver()
     {
         return $this->receiver;
     }
 
-    public function setReturnee(Address $returnee): self
+    /**
+     * @param \Omniva\Address $returnee
+     * @return Parcel
+     */
+    public function setReturnee($returnee)
     {
         $this->returnee = $returnee;
         return $this;
     }
 
-    public function getReturnee(): Address
+    /**
+     * @return Address
+     */
+    public function getReturnee()
     {
         return $this->returnee;
     }
 
-    public function hasTrackingNumber(): bool
+    /**
+     * @return bool
+     */
+    public function hasTrackingNumber()
     {
         return !is_null($this->trackingNumber);
     }
 
-    public function getTrackingNumber(): string
+    /**
+     * @return string
+     */
+    public function getTrackingNumber()
     {
         return $this->trackingNumber;
     }
 
-    public function setTrackingNumber(string $number): self
+    /**
+     * @param string $number
+     * @return Parcel
+     */
+    public function setTrackingNumber($number)
     {
         $this->trackingNumber = $number;
         return $this;

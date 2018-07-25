@@ -36,114 +36,183 @@ class Address
 
     private $pickupPoint;
 
-    public function setName(string $name): self
+    /**
+     * @param string $name
+     * @return Address
+     */
+    public function setName($name)
     {
         $this->name = $name;
         return $this;
     }
 
-    public function getName(): string
+    /**
+     * @return string
+     */
+    public function getName()
     {
         return $this->name;
     }
 
-    public function setPhone(?string $phone): self
+    /**
+     * @param null|string $phone
+     * @return Address
+     */
+    public function setPhone($phone)
     {
         $this->phone = $phone;
         return $this;
     }
 
-    public function getPhone(): ?string
+    /**
+     * @return null|string
+     */
+    public function getPhone()
     {
         return $this->phone;
     }
 
-    public function setEmail(string $email): self
+    /**
+     * @param string $email
+     * @return Address
+     */
+    public function setEmail($email)
     {
         $this->email = $email;
         return $this;
     }
 
-    public function getEmail(): string
+    /**
+     * @return string
+     */
+    public function getEmail()
     {
         return $this->email;
     }
 
-    public function hasEmail(): bool
+    /**
+     * @return bool
+     */
+    public function hasEmail()
     {
         return is_string($this->email);
     }
 
-    public function setCountryCode(string $code): self
+    /**
+     * @param string $code
+     * @return Address
+     */
+    public function setCountryCode($code)
     {
         $this->country = $code;
         return $this;
     }
 
-    public function getCountryCode(): string
+    /**
+     * @return string
+     */
+    public function getCountryCode()
     {
         return $this->country;
     }
 
-    public function setTerminal(string $terminal): self
+    /**
+     * @param string $terminal
+     * @return Address
+     */
+    public function setTerminal($terminal)
     {
         trigger_error('This method will removed 1.0. Use setPickupPoint() instead.', E_USER_DEPRECATED);
         $this->terminal = $terminal;
         return $this;
     }
 
-    public function hasTerminal(): bool
+    /**
+     * @return bool
+     */
+    public function hasTerminal()
     {
         trigger_error('This method will removed 1.0. Use hasPickupPoint() instead.', E_USER_DEPRECATED);
         return is_string($this->terminal);
     }
 
-    public function getTerminal(): ?string
+    /**
+     * @return null|string
+     */
+    public function getTerminal()
     {
         trigger_error('This method will removed 1.0. Use getPickupPoint() instead.', E_USER_DEPRECATED);
         return $this->terminal;
     }
 
-    public function setCity(string $city): self
+    /**
+     * @param string $city
+     * @return Address
+     */
+    public function setCity($city)
     {
         $this->city = $city;
         return $this;
     }
 
-    public function getCity(): string
+    /**
+     * @return string
+     */
+    public function getCity()
     {
         return $this->city;
     }
 
-    public function setStreet(string $street): self
+    /**
+     * @param string $street
+     * @return Address
+     */
+    public function setStreet($street)
     {
         $this->street = $street;
         return $this;
     }
 
-    public function getStreet(): string
+    /**
+     * @return string
+     */
+    public function getStreet()
     {
         return $this->street;
     }
 
-    public function setPostCode(string $code): self
+    /**
+     * @param string $code
+     * @return Address
+     */
+    public function setPostCode($code)
     {
         $this->postcode = $code;
         return $this;
     }
 
-    public function getPostCode(): string
+    /**
+     * @return string
+     */
+    public function getPostCode()
     {
         return $this->postcode;
     }
 
-    public function setPickupPoint(PickupPoint $point)
+    /**
+     * @param PickupPoint $point
+     * @return Address
+     */
+    public function setPickupPoint($point)
     {
         $this->pickupPoint = $point;
         return $this;
     }
 
-    public function getPickupPoint(): ?PickupPoint
+    /**
+     * @return null|PickupPoint
+     */
+    public function getPickupPoint()
     {
         return $this->pickupPoint;
     }
