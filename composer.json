@@ -3,7 +3,7 @@
     "description": "Library to communicate with Omniva API",
     "type": "library",
     "require": {
-        "php": ">=7.1",
+        "php": ">=5.5",
         "ext-soap": "*",
         "myclabs/php-enum": "^1.6",
         "guzzlehttp/guzzle": "^6.3"
