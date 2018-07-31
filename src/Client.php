@@ -139,7 +139,7 @@ class Client
         $writer->startElement('returnAddressee');
         $returnAddress = $parcel->getReturnee();
         $writer->writeElement('person_name', $returnAddress->getName());
-        $writer->writeElement('mobile', $returnAddress->getPhone());
+        $writer->writeElement('phone', $returnAddress->getPhone());
         if ($returnAddress->hasEmail()) {
             $writer->writeElement('email', $returnAddress->getEmail());
         }
@@ -155,7 +155,7 @@ class Client
         $writer->startElement('onloadAddressee');
         $sender = $parcel->getSender();
         $writer->writeElement('person_name', $sender->getName());
-        $writer->writeElement('mobile', $sender->getPhone());
+        $writer->writeElement('phone', $sender->getPhone());
         if ($sender->hasEmail()) {
             $writer->writeElement('email', $sender->getEmail());
         }
