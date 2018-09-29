@@ -33,6 +33,100 @@ $client = new Client($username, $password);
 $points = $client->getPickupPoints();
 ```
 
+### Create Shipment & get Label
+
+```
+use Omniva\Parcel;
+use Omniva\Client;
+use Omniva\Address;
+use Omniva\Service;
+
+$client = new Client($username, $password);
+
+$shipment = $parcel->getShipment();
+$id = $parcel->getId();
+
+$omnivaParcel = new Parcel();
+$omnivaParcel
+    ->setWeight($parcel->getWeightInKg())
+    ->setPartnerId($id)
+    ->setComment($shipment->getRemark())
+;
+
+if ($shipment->getCodAmount()) {
+    $omnivaParcel->setCodAmount($shipment->getCodAmount());
+    $omnivaParcel->addService(Service::COD());
+}
+
+$sender = new Address();
+$sender
+    ->setName($shipment->getSender()->getName())
+    ->setPhone($shipment->getSender()->getPhone())
+    ->setCountryCode($shipment->getSender()->getCountry()->getCode())
+    ->setCity($shipment->getSender()->getCity())
+    ->setStreet($shipment->getSender()->getStreet())
+    ->setPostCode($shipment->getSender()->getPostalCode())
+;
+
+if ($shipment->getSender()->getEmail()) {
+    $sender->setEmail($shipment->getSender()->getEmail());
+}
+
+$omnivaParcel->setSender($sender);
+
+$returnee = clone $sender;
+$omnivaParcel->setReturnee($returnee);
+
+$receiver = new Address();
+$receiver
+    ->setName($shipment->getReceiver()->getName())
+    ->setCountryCode($shipment->getReceiver()->getCountry()->getCode())
+;
+
+if ($shipment->getReceiver()->getEmail()) {
+    $receiver->setEmail($shipment->getReceiver()->getEmail());
+}
+
+if ($shipment->getReceiver()->getPhone()) {
+    $receiver->setPhone($shipment->getReceiver()->getPhone());
+}
+
+if ($shipment->getReceiver()->isTypeTerminal()) {
+    $terminal = $shipment->getReceiver()->getTerminal();
+
+    $pickupPoint = new PickupPoint($terminal->getIdentifier());
+    $pickupPoint->setType($terminal->isPostOffice() ? PickupPoint::TYPE_POST_OFFICE : PickupPoint::TYPE_TERMINAL);
+
+    $receiver->setPickupPoint($pickupPoint);
+
+    if ($shipment->getReceiver()->getPhone()) {
+        $omnivaParcel->addService(Service::SMS());
+    }
+
+    if ($shipment->getReceiver()->getEmail()) {
+        $omnivaParcel->addService(Service::EMAIL());
+    }
+} else {
+    $receiver
+        ->setCity($shipment->getReceiver()->getCity())
+        ->setStreet($shipment->getReceiver()->getStreet())
+        ->setPostCode($shipment->getReceiver()->getPostalCode())
+    ;
+}
+$omnivaParcel->setReceiver($receiver);
+
+$response = $client->createShipment($omnivaParcel);
+
+$trackingNumber = $response->savedPacketInfo->barcodeInfo->barcode;
+$parcel->setTrackingNumber($trackingNumber);
+$omnivaParcel->setTrackingNumber($trackingNumber);
+
+$response = $client->getLabel($omnivaParcel);
+
+// PDF content
+$content = $response->successAddressCards->addressCardData->fileData;
+```
+
 ## Ideas for further development
 - [ ] implement `Client` tracking
 - [ ] add Symfony\Constraint for data validation
