@@ -1,44 +1,45 @@
 <?php
 
-namespace Omniva;
+declare(strict_types=1);
 
-use Omniva\PickupPoint;
+namespace Omniva;
 
 class Address
 {
     /**
      * name & surname
      */
-    private $name;
+    private string $name;
 
     /**
      * phone number
      */
-    private $phone;
+    private ?string $phone = null;
 
-    private $email;
+    private ?string $email = null;
 
     /**
      * country code (ISO code 2 letters)
      */
-    private $country;
+    private string $country;
 
     /**
      * terminal identifier
      */
-    private $terminal;
+    private ?string $terminal = null;
 
-    private $city;
+    private string $city;
 
-    private $street;
+    private string $street;
 
-    private $postcode;
+    private string $postcode;
 
-    private $pickupPoint;
+    private ?PickupPoint $pickupPoint = null;
 
     public function setName(string $name): self
     {
         $this->name = $name;
+
         return $this;
     }
 
@@ -50,6 +51,7 @@ class Address
     public function setPhone(?string $phone): self
     {
         $this->phone = $phone;
+
         return $this;
     }
 
@@ -61,10 +63,11 @@ class Address
     public function setEmail(string $email): self
     {
         $this->email = $email;
+
         return $this;
     }
 
-    public function getEmail(): string
+    public function getEmail(): ?string
     {
         return $this->email;
     }
@@ -77,6 +80,7 @@ class Address
     public function setCountryCode(string $code): self
     {
         $this->country = $code;
+
         return $this;
     }
 
@@ -89,24 +93,28 @@ class Address
     {
         trigger_error('This method will removed 1.0. Use setPickupPoint() instead.', E_USER_DEPRECATED);
         $this->terminal = $terminal;
+
         return $this;
     }
 
     public function hasTerminal(): bool
     {
         trigger_error('This method will removed 1.0. Use hasPickupPoint() instead.', E_USER_DEPRECATED);
+
         return is_string($this->terminal);
     }
 
     public function getTerminal(): ?string
     {
         trigger_error('This method will removed 1.0. Use getPickupPoint() instead.', E_USER_DEPRECATED);
+
         return $this->terminal;
     }
 
     public function setCity(string $city): self
     {
         $this->city = $city;
+
         return $this;
     }
 
@@ -118,6 +126,7 @@ class Address
     public function setStreet(string $street): self
     {
         $this->street = $street;
+
         return $this;
     }
 
@@ -129,6 +138,7 @@ class Address
     public function setPostCode(string $code): self
     {
         $this->postcode = $code;
+
         return $this;
     }
 
@@ -137,9 +147,10 @@ class Address
         return $this->postcode;
     }
 
-    public function setPickupPoint(PickupPoint $point)
+    public function setPickupPoint(PickupPoint $point): static
     {
         $this->pickupPoint = $point;
+
         return $this;
     }
 

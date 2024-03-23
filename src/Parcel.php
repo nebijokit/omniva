@@ -1,8 +1,9 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Omniva;
-use Omniva\Service;
-use Omniva\Address;
+
 use ArrayIterator;
 
 class Parcel
@@ -10,28 +11,31 @@ class Parcel
     /**
      * weight in kilograms
      */
-    private $weight;
+    private float $weight;
 
-    private $services;
+    /**
+     * @var ArrayIterator<int, Service>
+     */
+    private readonly \ArrayIterator $services;
 
     /**
      * amount in euros
      */
-    private $codAmount;
+    private ?float $codAmount = null;
 
     /**
      * bank account number (IBAN)
      */
-    private $bankAccount;
+    private string $bankAccount;
 
-    private $comment;
-    private $partnerId;
+    private ?string $comment = null;
+    private string $partnerId;
 
-    private $receiver;
-    private $returnee;
-    private $sender;
+    private Address $receiver;
+    private Address $returnee;
+    private Address $sender;
 
-    private $trackingNumber;
+    private ?string $trackingNumber = null;
 
     public function __construct()
     {
@@ -41,9 +45,10 @@ class Parcel
     /**
      * in grams
      */
-    public function setWeight(float $weight)
+    public function setWeight(float $weight): static
     {
         $this->weight = $weight;
+
         return $this;
     }
 
@@ -55,15 +60,16 @@ class Parcel
     public function setComment(string $comment): self
     {
         $this->comment = $comment;
+
         return $this;
     }
 
     public function hasComment(): bool
     {
-        return !is_null($this->comment);
+        return ! is_null($this->comment);
     }
 
-    public function getComment(): string
+    public function getComment(): ?string
     {
         return $this->comment;
     }
@@ -71,6 +77,7 @@ class Parcel
     public function setPartnerId(string $partnerId): self
     {
         $this->partnerId = $partnerId;
+
         return $this;
     }
 
@@ -82,6 +89,7 @@ class Parcel
     public function setCodAmount(float $amount): self
     {
         $this->codAmount = $amount;
+
         return $this;
     }
 
@@ -93,6 +101,7 @@ class Parcel
     public function setBankAccount(string $number): self
     {
         $this->bankAccount = $number;
+
         return $this;
     }
 
@@ -109,9 +118,13 @@ class Parcel
     public function addService(Service $service): self
     {
         $this->services->append($service);
+
         return $this;
     }
 
+    /**
+     * @return ArrayIterator<int, Service>
+     */
     public function getServices(): ArrayIterator
     {
         return $this->services;
@@ -120,6 +133,7 @@ class Parcel
     public function setSender(Address $sender): self
     {
         $this->sender = $sender;
+
         return $this;
     }
 
@@ -131,6 +145,7 @@ class Parcel
     public function setReceiver(Address $receiver): self
     {
         $this->receiver = $receiver;
+
         return $this;
     }
 
@@ -142,6 +157,7 @@ class Parcel
     public function setReturnee(Address $returnee): self
     {
         $this->returnee = $returnee;
+
         return $this;
     }
 
@@ -152,10 +168,10 @@ class Parcel
 
     public function hasTrackingNumber(): bool
     {
-        return !is_null($this->trackingNumber);
+        return ! is_null($this->trackingNumber);
     }
 
-    public function getTrackingNumber(): string
+    public function getTrackingNumber(): ?string
     {
         return $this->trackingNumber;
     }
@@ -163,6 +179,7 @@ class Parcel
     public function setTrackingNumber(string $number): self
     {
         $this->trackingNumber = $number;
+
         return $this;
     }
 }

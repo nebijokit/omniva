@@ -1,23 +1,24 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Omniva;
 
 class PickupPoint
 {
-    const TYPE_TERMINAL = 0;
-    const TYPE_POST_OFFICE = 1;
+    public const int TYPE_TERMINAL = 0;
+    public const int TYPE_POST_OFFICE = 1;
 
-    private $type;
-    private $identifier;
+    private ?int $type = null;
 
-    public function __construct(string $identifier)
+    public function __construct(private string $identifier)
     {
-        $this->identifier = $identifier;
     }
 
     public function setIdentifier(string $identifier): self
     {
         $this->identifier = $identifier;
+
         return $this;
     }
 
@@ -28,11 +29,12 @@ class PickupPoint
 
     public function setType(int $type): self
     {
-        if (!in_array($type, [self::TYPE_TERMINAL, self::TYPE_POST_OFFICE])) {
+        if (! in_array($type, [self::TYPE_TERMINAL, self::TYPE_POST_OFFICE])) {
             throw new \InvalidArgumentException('Unsupported type');
         }
 
         $this->type = $type;
+
         return $this;
     }
 
@@ -44,12 +46,14 @@ class PickupPoint
     public function isPostOffice(): bool
     {
         $this->guardAgainstEmptyType();
+
         return $this->getType() === self::TYPE_POST_OFFICE;
     }
 
     public function isTerminal(): bool
     {
         $this->guardAgainstEmptyType();
+
         return $this->getType() === self::TYPE_TERMINAL;
     }
 
