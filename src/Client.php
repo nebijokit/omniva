@@ -1,30 +1,26 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Omniva;
 
-use Omniva\Parcel;
-use Omniva\Service;
+use GuzzleHttp\Exception\GuzzleException;
 use SoapVar;
 use XMLWriter;
 use stdClass;
 use SoapClient;
 use GuzzleHttp\Client as HttpClient;
-use Omniva\PickupPoint;
 
 class Client
 {
-    private $username;
+    private ?HttpClient $httpClient = null;
 
-    private $password;
+    private ?\SoapClient $soapClient = null;
 
-    private $httpClient;
-
-    private $soapClient;
-
-    public function __construct(string $username, string $password)
-    {
-        $this->username = $username;
-        $this->password = $password;
+    public function __construct(
+        private readonly string $username,
+        private readonly string $password
+    ) {
     }
 
     /**
@@ -41,6 +37,7 @@ class Client
      *      }
      *  }
      * }
+     * @throws \SoapFault
      */
     public function createShipment(Parcel $parcel): stdClass
     {
@@ -64,35 +61,37 @@ class Client
         $writer->startElement('item');
         $receiver = $parcel->getReceiver();
 
-        $hasPickupPoint = $receiver->getPickupPoint() instanceof PickupPoint;
         $pickupPoint = $receiver->getPickupPoint();
+        $hasPickupPoint = $pickupPoint instanceof PickupPoint;
 
         if ($hasPickupPoint) {
             if ($pickupPoint->isPostOffice()) {
-                $deliveryServiceCode = Service::POST_OFFICE();
-            } else if ($pickupPoint->isTerminal()) {
-                $deliveryServiceCode = Service::TERMINAL();
+                $deliveryServiceCode = Service::POST_OFFICE;
+            } elseif ($pickupPoint->isTerminal()) {
+                $deliveryServiceCode = Service::TERMINAL;
             } else {
                 throw new \RuntimeException('Wrong PickupPoint provided');
             }
         } else {
-            $deliveryServiceCode = in_array($receiver->getCountryCode(), ['LT', 'LV']) ? Service::COURIER_LT_LV() : Service::COURIER();
+            $deliveryServiceCode = in_array($receiver->getCountryCode(), ['LT', 'LV']) ? Service::COURIER_LT_LV : Service::COURIER;
         }
 
-        $writer->writeAttribute('service', $deliveryServiceCode->getValue());
+        $writer->writeAttribute('service', $deliveryServiceCode->value);
 
         if ($parcel->hasServices()) {
             $writer->startElement('add_service');
+
             foreach ($parcel->getServices() as $service) {
                 $writer->startElement('option');
-                $writer->writeAttribute('code', $service->getValue());
+                $writer->writeAttribute('code', $service->value);
                 $writer->endElement();
             }
+
             $writer->endElement();
         }
 
         $writer->startElement('measures');
-        $writer->writeAttribute('weight', $parcel->getWeight());
+        $writer->writeAttribute('weight', (string) $parcel->getWeight());
         $writer->endElement();
 
         if ($parcel->getCodAmount()) {
@@ -100,7 +99,7 @@ class Client
 
             $writer->startElement('values');
             $writer->writeAttribute('code', 'item_value');
-            $writer->writeAttribute('amount', $parcel->getCodAmount());
+            $writer->writeAttribute('amount', (string) $parcel->getCodAmount());
             $writer->endElement();
 
             $writer->endElement();
@@ -117,6 +116,7 @@ class Client
         $writer->startElement('receiverAddressee');
         $writer->writeElement('person_name', $receiver->getName());
         $writer->writeElement('mobile', $receiver->getPhone());
+
         if ($receiver->hasEmail()) {
             $writer->writeElement('email', $receiver->getEmail());
         }
@@ -156,6 +156,7 @@ class Client
         $sender = $parcel->getSender();
         $writer->writeElement('person_name', $sender->getName());
         $writer->writeElement('phone', $sender->getPhone());
+
         if ($sender->hasEmail()) {
             $writer->writeElement('email', $sender->getEmail());
         }
@@ -193,6 +194,8 @@ class Client
      *      }
      *  }
      * }
+     *
+     * @throws \SoapFault
      */
     public function getLabel(Parcel $parcel): stdClass
     {
@@ -216,6 +219,9 @@ class Client
         );
     }
 
+    /**
+     * @throws \SoapFault
+     */
     public function getSoapCLient(): SoapClient
     {
         if (!$this->soapClient instanceof SoapClient) {
@@ -235,7 +241,7 @@ class Client
 
     public function getHttpClient(): HttpClient
     {
-        if (!$this->httpClient instanceof HttpClient) {
+        if (! $this->httpClient instanceof HttpClient) {
             $this->httpClient = new HttpClient();
         }
 
@@ -244,6 +250,8 @@ class Client
 
     /**
      * multidimension array with item structure:
+     *
+     * @return array<int, array<int, string>>
      *
      * array(25) {
      *  [0]=> string(6) "﻿ZIP"
@@ -272,6 +280,9 @@ class Client
      *  [23]=> string(11) "comment_lit"
      *  [24]=> string(8) "MODIFIED"
      * }
+     *
+     * @throws GuzzleException
+     * @throws \RuntimeException
      */
     public function getPickupPoints(): array
     {
@@ -279,10 +290,17 @@ class Client
 
         $content = (string)$response->getBody();
 
-        $pickupPoints = [];
         $file = fopen('php://temp','r+');
+
+        if (! is_resource($file)) {
+            throw new \RuntimeException('Could not open temporary file');
+        }
+
         fwrite($file, $content);
         rewind($file); //rewind to process CSV
+
+        $pickupPoints = [];
+
         while (($row = fgetcsv($file, 0, ';')) !== FALSE) {
             $pickupPoints[] = $row;
         }

@@ -15,7 +15,7 @@ PHP wrapper for courier [Omniva integration](https://www.omniva.ee/public/files/
 
 Returns Label response (`stdClass` object) with encoded PDF & barcode. For Response structure view `getLabel` phpdoc.
 
-```
+```php
 $client = new Client($username, $password);
 $client->getLabel($parcel);
 ```
@@ -26,7 +26,7 @@ $client->getLabel($parcel);
 This endpoint returns list of pickup points. Pickup point can be Terminal or Post office.
 Field _Type_ determines whether field is _Terminal_ (Type: 0) or _Post office_ (Type: 1).
 
-```
+```php
 // username & password is not necessary for pickup points
 $client = new Client($username, $password);
 
@@ -35,7 +35,7 @@ $points = $client->getPickupPoints();
 
 ### Create Shipment & get Label
 
-```
+```php
 use Omniva\Parcel;
 use Omniva\Client;
 use Omniva\Address;
@@ -55,7 +55,7 @@ $omnivaParcel
 
 if ($shipment->getCodAmount()) {
     $omnivaParcel->setCodAmount($shipment->getCodAmount());
-    $omnivaParcel->addService(Service::COD());
+    $omnivaParcel->addService(Service::COD);
 }
 
 $sender = new Address();
@@ -100,11 +100,11 @@ if ($shipment->getReceiver()->isTypeTerminal()) {
     $receiver->setPickupPoint($pickupPoint);
 
     if ($shipment->getReceiver()->getPhone()) {
-        $omnivaParcel->addService(Service::SMS());
+        $omnivaParcel->addService(Service::SMS);
     }
 
     if ($shipment->getReceiver()->getEmail()) {
-        $omnivaParcel->addService(Service::EMAIL());
+        $omnivaParcel->addService(Service::EMAIL);
     }
 } else {
     $receiver

@@ -3,13 +3,14 @@
     "description": "Library to communicate with Omniva API",
     "type": "library",
     "require": {
-        "php": ">=7.1",
+        "php": ">=8.3",
         "ext-soap": "*",
-        "myclabs/php-enum": "^1.6",
-        "guzzlehttp/guzzle": "^6.3"
+        "myclabs/php-enum": "^1.8",
+        "guzzlehttp/guzzle": "^7.8"
     },
     "require-dev": {
-        "phpspec/phpspec": "^4.3"
+        "phpspec/phpspec": "^7.5",
+        "rector/rector": "^1.0"
     },
     "autoload": {
         "psr-4": {
